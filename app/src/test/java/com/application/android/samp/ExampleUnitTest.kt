@@ -1,4 +1,4 @@
-package com.bignerdranch.android.samp
+package com.application.android.samp
 
 import org.junit.Test
 
