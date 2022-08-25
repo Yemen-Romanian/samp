@@ -1,18 +1,21 @@
 package com.application.android.samp.viewmodels
 
-import android.provider.MediaStore
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.application.android.samp.AudioTrack
+import com.application.android.samp.data.AudioTrack
+import com.application.android.samp.data.AudioTrackRepository
+
+private const val TAG = "MainViewModel"
 
 class MainViewModel: ViewModel() {
-    val audioTracks = mutableListOf<AudioTrack>()
+    val audioTracks: MutableLiveData<List<AudioTrack>> = MutableLiveData()
+    private val audioRepository = AudioTrackRepository.get()
 
     init {
-        for (i in 0 until 10) {
-            val track = AudioTrack()
-            track.title = "Track ${i + 1}"
-            track.artist = "The Beatles"
-            audioTracks += track
-        }
+        fetchAudioTracks()
+    }
+
+    fun fetchAudioTracks() {
+        audioTracks.value = audioRepository.getAllAudioTracks()
     }
 }
