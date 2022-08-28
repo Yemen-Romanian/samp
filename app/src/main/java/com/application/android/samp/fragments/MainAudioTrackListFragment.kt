@@ -9,32 +9,34 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.application.android.samp.AudioTrack
+import com.application.android.samp.data.AudioTrack
 import com.application.android.samp.R
 import com.application.android.samp.viewmodels.MainViewModel
 
 private const val TAG = "MainAudioTrackListFragment"
 
+/***
+ * Fragment that contains main list of all tracks available in Music folder
+ * on External Storage. Uses RecyclerView as a main widget
+ */
 class MainAudioTrackListFragment: Fragment() {
     private lateinit var audioRecyclerView: RecyclerView
-    private var adapter: AudioTrackAdapter? = null
+    private lateinit var noDataText: TextView
+    private var adapter: AudioTrackAdapter? = AudioTrackAdapter(emptyList())
 
     private val mainViewModel: MainViewModel by lazy {
-        ViewModelProviders.of(this)[MainViewModel::class.java]
+        ViewModelProviders.of(activity as FragmentActivity)[MainViewModel::class.java]
     }
 
     companion object {
         fun newInstance(): MainAudioTrackListFragment {
             return MainAudioTrackListFragment()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: Overall number of tracks ${mainViewModel.audioTracks.size}")
     }
 
     override fun onCreateView(
@@ -49,16 +51,39 @@ class MainAudioTrackListFragment: Fragment() {
         );
         audioRecyclerView =
             view.findViewById(R.id.audio_recycler_view) as RecyclerView
+        noDataText =
+            view.findViewById(R.id.no_data_text) as TextView
+        audioRecyclerView.adapter = adapter
         audioRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        updateAudioList()
 
         return view;
     }
 
-    private fun updateAudioList() {
-        val audioTracks = mainViewModel.audioTracks
-        adapter = AudioTrackAdapter(audioTracks)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.e(TAG, "onViewCreated: on view created", )
+        mainViewModel.audioTracks.observe(
+            viewLifecycleOwner,
+            Observer {
+                    tracks ->
+                Log.e(TAG, "onViewCreated: Observer")
+                Log.i(TAG, "onViewCreated: Uploaded ${tracks.size} audio tracks")
+                updateAudioList(tracks)
+
+                if (tracks.isEmpty()) {
+                    noDataText.visibility = View.VISIBLE
+                    audioRecyclerView.visibility = View.GONE
+                }
+                else{
+                    noDataText.visibility = View.GONE
+                    audioRecyclerView.visibility = View.VISIBLE
+                }
+            }
+        )
+    }
+
+    private fun updateAudioList(tracks: List<AudioTrack>) {
+        adapter = AudioTrackAdapter(tracks)
         audioRecyclerView.adapter = adapter
     }
 
