@@ -16,7 +16,7 @@ class AudioTrackRepository private constructor(
 
         fun initialize(context: Context) {
             if (instance == null) {
-                instance = AudioTrackRepository(context, InternalStorageAudioTrackSource())
+                instance = AudioTrackRepository(context, InternalStorageAudioTrackSource(context))
             }
         }
 

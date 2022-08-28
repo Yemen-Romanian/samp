@@ -82,26 +82,6 @@ class MainAudioTrackListFragment: Fragment() {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.e(TAG, "onResume: On resume", )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.e(TAG, "onResume: On pause", )
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.e(TAG, "onResume: On stop", )
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.e(TAG, "onResume: On destroy view", )
-    }
-
     private fun updateAudioList(tracks: List<AudioTrack>) {
         adapter = AudioTrackAdapter(tracks)
         audioRecyclerView.adapter = adapter
